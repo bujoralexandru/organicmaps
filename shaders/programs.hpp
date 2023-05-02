@@ -64,6 +64,7 @@ enum class Program
   SmaaEdges,
   SmaaBlendingWeight,
   SmaaFinal,
+  Car3D,
 
   ProgramsCount
 };
@@ -127,6 +128,7 @@ inline std::string DebugPrint(Program p)
   case Program::SmaaEdges: return "SmaaEdges";
   case Program::SmaaBlendingWeight: return "SmaaBlendingWeight";
   case Program::SmaaFinal: return "SmaaFinal";
+  case Program::Car3D: return "Car3D";
 
   case Program::ProgramsCount:
     CHECK(false, ("Try to output ProgramsCount"));

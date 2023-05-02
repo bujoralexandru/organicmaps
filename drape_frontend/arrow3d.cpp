@@ -10,11 +10,21 @@
 #include "indexer/map_style_reader.hpp"
 #include "indexer/scales.hpp"
 
+#include "platform/platform.hpp"
+
 #include "geometry/screenbase.hpp"
+
+#include "base/assert.hpp"
+#include "base/file_name_utils.hpp"
+
+#include "defines.hpp"
+
+#include "3party/tinyobjloader/tiny_obj_loader.h"
 
 namespace df
 {
-namespace arrow3d {
+namespace arrow3d
+{
 double constexpr kArrowSize = 12.0;
 double constexpr kArrow3dScaleMin = 1.0;
 double constexpr kArrow3dScaleMax = 2.2;
@@ -31,27 +41,67 @@ df::ColorConstant const kArrow3DObsoleteColor = "Arrow3DObsolete";
 df::ColorConstant const kArrow3DColor = "Arrow3D";
 df::ColorConstant const kArrow3DOutlineColor = "Arrow3DOutline";
 
+static std::string GetBaseDir(const std::string & filepath)
+{
+  if (filepath.find_last_of("/\\") != std::string::npos)
+    return filepath.substr(0, filepath.find_last_of("/\\"));
+  return "";
+}
+
 Arrow3d::Arrow3d(ref_ptr<dp::GraphicsContext> context)
   : m_arrowMesh(context, dp::MeshObject::DrawPrimitive::Triangles)
   , m_shadowMesh(context, dp::MeshObject::DrawPrimitive::Triangles)
   , m_state(CreateRenderState(gpu::Program::Arrow3d, DepthLayer::OverlayLayer))
 {
   m_state.SetDepthTestEnabled(false);
+
+  auto filename = "/storage/emulated/0/Android/data/app.organicmaps.debug/files/10000001/model.obj";
+  std::string base_dir = GetBaseDir(filename);
+  if (base_dir.empty())
+  {
+    base_dir = ".";
+  }
+
+  base_dir += "/";
+
+  tinyobj::attrib_t inattrib;
+  std::vector<tinyobj::shape_t> inshapes;
+  std::vector<tinyobj::material_t> materials;
+  std::map<std::string, uint32_t> textures;
+
+  std::string warn;
+  std::string err;
+  tinyobj::LoadObj(&inattrib, &inshapes, &materials, &warn, &err, filename, base_dir.c_str());
+  if (!warn.empty())
+  {
+    std::cout << "WARN: " << warn << std::endl;
+  }
+  if (!err.empty())
+  {
+    std::cerr << err << std::endl;
+  }
+
+  printf("# of vertices  = %d\n", (int)(inattrib.vertices.size()) / 3);
+  printf("# of normals   = %d\n", (int)(inattrib.normals.size()) / 3);
+  printf("# of texcoords = %d\n", (int)(inattrib.texcoords.size()) / 2);
+  printf("# of materials = %d\n", (int)materials.size());
+  printf("# of shapes    = %d\n", (int)inshapes.size());
+
   std::vector<float> vertices = {
-    0.0f, 0.0f, -1.0f, 1.0f,    -1.2f, -1.0f, 0.0f, 1.0f,   0.0f, 2.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, -1.0f, 1.0f,    0.0f,  2.0f, 0.0f, 1.0f,    1.2f, -1.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, -1.0f, 1.0f,    0.0f, -0.5f, 0.0f, 1.0f,    -1.2f, -1.0f, 0.0f, 1.0f,
-    0.0f, 0.0f, -1.0f, 1.0f,    1.2f, -1.0f, 0.0f, 1.0f,    0.0f, -0.5f, 0.0f, 1.0f,
+      0.0f,  0.0f,  -1.0f, 1.0f, -1.2f, -1.0f,  0.0f, 1.0f, 0.0f,  2.0f,   0.0f, 1.0f,
+      0.0f,  0.0f,  -1.0f, 1.0f, 0.0f,  2.0f,   0.0f, 1.0f, 1.2f,  -1.0f,  0.0f, 1.0f,
+      0.0f,  0.0f,  -1.0f, 1.0f, 0.0f,  -0.5f,  0.0f, 1.0f, -1.2f, -1.0f,  0.0f, 1.0f,
+      0.0f,  0.0f,  -1.0f, 1.0f, 1.2f,  -1.0f,  0.0f, 1.0f, 0.0f,  -0.5f,  0.0f, 1.0f,
 
-    0.0f, 2.27f, 0.0f, 0.0f,    1.4f, -1.17f, 0.0f, 0.0f,   0.0f, 2.0f, 0.0f, 1.0f,
-    0.0f, 2.0f, 0.0f, 1.0f,     1.4f, -1.17f, 0.0f, 0.0f,   1.2f, -1.0f, 0.0f, 1.0f,
-    0.0f, 2.27f, 0.0f, 0.0f,    0.0f, 2.0f, 0.0f, 1.0f,     -1.4f, -1.17f, 0.0f, 0.0f,
-    0.0f, 2.0f, 0.0f, 1.0f,     -1.2f, -1.0f, 0.0f, 1.0f,   -1.4f, -1.17f, 0.0f, 0.0f,
+      0.0f,  2.27f, 0.0f,  0.0f, 1.4f,  -1.17f, 0.0f, 0.0f, 0.0f,  2.0f,   0.0f, 1.0f,
+      0.0f,  2.0f,  0.0f,  1.0f, 1.4f,  -1.17f, 0.0f, 0.0f, 1.2f,  -1.0f,  0.0f, 1.0f,
+      0.0f,  2.27f, 0.0f,  0.0f, 0.0f,  2.0f,   0.0f, 1.0f, -1.4f, -1.17f, 0.0f, 0.0f,
+      0.0f,  2.0f,  0.0f,  1.0f, -1.2f, -1.0f,  0.0f, 1.0f, -1.4f, -1.17f, 0.0f, 0.0f,
 
-    1.2f, -1.0f, 0.0f, 1.0f,    1.4f, -1.17f, 0.0f, 0.0f,   0.0f, -0.67f, 0.0f, 0.0f,
-    0.0f, -0.5f, 0.0f, 1.0f,    1.2f, -1.0f, 0.0f, 1.0f,    0.0f, -0.67f, 0.0f, 0.0f,
-    -1.2f, -1.0f, 0.0f, 1.0f,   0.0f, -0.67f, 0.0f, 0.0f,   -1.4f, -1.17f, 0.0f, 0.0f,
-    0.0f, -0.5f, 0.0f, 1.0f,    0.0f, -0.67f, 0.0f, 0.0f,   -1.2f, -1.0f, 0.0f, 1.0f,
+      1.2f,  -1.0f, 0.0f,  1.0f, 1.4f,  -1.17f, 0.0f, 0.0f, 0.0f,  -0.67f, 0.0f, 0.0f,
+      0.0f,  -0.5f, 0.0f,  1.0f, 1.2f,  -1.0f,  0.0f, 1.0f, 0.0f,  -0.67f, 0.0f, 0.0f,
+      -1.2f, -1.0f, 0.0f,  1.0f, 0.0f,  -0.67f, 0.0f, 0.0f, -1.4f, -1.17f, 0.0f, 0.0f,
+      0.0f,  -0.5f, 0.0f,  1.0f, 0.0f,  -0.67f, 0.0f, 0.0f, -1.2f, -1.0f,  0.0f, 1.0f,
   };
 
   std::vector<float> normals =
@@ -79,25 +129,16 @@ double Arrow3d::GetMaxBottomSize()
   return kBottomSize * arrow3d::kArrowSize * arrow3d::kArrow3dScaleMax * kOutlineScale;
 }
 
-void Arrow3d::SetPosition(const m2::PointD & position)
-{
-  m_position = position;
-}
+void Arrow3d::SetPosition(const m2::PointD & position) { m_position = position; }
 
-void Arrow3d::SetAzimuth(double azimuth)
-{
-  m_azimuth = azimuth;
-}
+void Arrow3d::SetAzimuth(double azimuth) { m_azimuth = azimuth; }
 
 void Arrow3d::SetTexture(ref_ptr<dp::TextureManager> texMng)
 {
   m_state.SetColorTexture(texMng->GetSymbolsTexture());
 }
 
-void Arrow3d::SetPositionObsolete(bool obsolete)
-{
-  m_obsoletePosition = obsolete;
-}
+void Arrow3d::SetPositionObsolete(bool obsolete) { m_obsoletePosition = obsolete; }
 
 void Arrow3d::Render(ref_ptr<dp::GraphicsContext> context, ref_ptr<gpu::ProgramManager> mng,
                      ScreenBase const & screen, bool routingMode)
@@ -114,13 +155,13 @@ void Arrow3d::Render(ref_ptr<dp::GraphicsContext> context, ref_ptr<gpu::ProgramM
   if (routingMode)
   {
     dp::Color const outlineColor = df::GetColorConstant(df::kArrow3DOutlineColor);
-    RenderArrow(context, mng, m_shadowMesh, screen, gpu::Program::Arrow3dOutline,
-                outlineColor, 0.0f /* dz */, kOutlineScale /* scaleFactor */);
+    RenderArrow(context, mng, m_shadowMesh, screen, gpu::Program::Arrow3dOutline, outlineColor,
+                0.0f /* dz */, kOutlineScale /* scaleFactor */);
   }
 
   // Render arrow.
   dp::Color const color =
-    df::GetColorConstant(m_obsoletePosition ? df::kArrow3DObsoleteColor : df::kArrow3DColor);
+      df::GetColorConstant(m_obsoletePosition ? df::kArrow3DObsoleteColor : df::kArrow3DColor);
   RenderArrow(context, mng, m_arrowMesh, screen, gpu::Program::Arrow3d, color, 0.0f /* dz */,
               1.0f /* scaleFactor */);
 }
@@ -130,8 +171,8 @@ void Arrow3d::RenderArrow(ref_ptr<dp::GraphicsContext> context, ref_ptr<gpu::Pro
                           dp::Color const & color, float dz, float scaleFactor)
 {
   gpu::Arrow3dProgramParams params;
-  math::Matrix<float, 4, 4> const modelTransform = CalculateTransform(screen, dz, scaleFactor,
-                                                                      context->GetApiVersion());
+  math::Matrix<float, 4, 4> const modelTransform =
+      CalculateTransform(screen, dz, scaleFactor, context->GetApiVersion());
   params.m_transform = glsl::make_mat4(modelTransform.m_data);
   params.m_color = glsl::ToVec4(color);
 
@@ -140,7 +181,8 @@ void Arrow3d::RenderArrow(ref_ptr<dp::GraphicsContext> context, ref_ptr<gpu::Pro
 }
 
 math::Matrix<float, 4, 4> Arrow3d::CalculateTransform(ScreenBase const & screen, float dz,
-                                                      float scaleFactor, dp::ApiVersion apiVersion) const
+                                                      float scaleFactor,
+                                                      dp::ApiVersion apiVersion) const
 {
   double arrowScale = VisualParams::Instance().GetVisualScale() * arrow3d::kArrowSize * scaleFactor;
   if (screen.isPerspective())
@@ -151,7 +193,8 @@ math::Matrix<float, 4, 4> Arrow3d::CalculateTransform(ScreenBase const & screen,
 
   auto const scaleX = static_cast<float>(arrowScale * 2.0 / screen.PixelRect().SizeX());
   auto const scaleY = static_cast<float>(arrowScale * 2.0 / screen.PixelRect().SizeY());
-  auto const scaleZ = static_cast<float>(screen.isPerspective() ? (0.002 * screen.GetDepth3d()) : 1.0);
+  auto const scaleZ =
+      static_cast<float>(screen.isPerspective() ? (0.002 * screen.GetDepth3d()) : 1.0);
 
   m2::PointD const pos = screen.GtoP(m_position);
   auto const dX = static_cast<float>(2.0 * pos.x / screen.PixelRect().SizeX() - 1.0);

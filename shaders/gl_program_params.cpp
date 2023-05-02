@@ -16,8 +16,7 @@ struct UniformsGuard
 {
   template <typename ParamsType>
   UniformsGuard(ref_ptr<dp::GLGpuProgram> program, ParamsType const &)
-    : m_program(program)
-    , m_paramsName(ParamsType::GetName())
+    : m_program(program), m_paramsName(ParamsType::GetName())
   {
     ASSERT_EQUAL(m_paramsName, ProgramParams::GetBoundParamsName(program),
                  ("Mismatched program and parameters", m_program->GetName()));
@@ -26,8 +25,8 @@ struct UniformsGuard
   ~UniformsGuard()
   {
     auto const uniformsCount = m_program->GetNumericUniformsCount();
-    CHECK_EQUAL(m_counter, uniformsCount, ("Not all numeric uniforms are set up",
-                m_program->GetName(), m_paramsName));
+    CHECK_EQUAL(m_counter, uniformsCount,
+                ("Not all numeric uniforms are set up", m_program->GetName(), m_paramsName));
   }
 
   ref_ptr<dp::GLGpuProgram> m_program;
@@ -35,12 +34,14 @@ struct UniformsGuard
   uint32_t m_counter = 0;
 };
 
-template <typename ParamType> class GLTypeWrapper;
+template <typename ParamType>
+class GLTypeWrapper;
 
-#define BIND_GL_TYPE(DataType, GLType) \
-  template <> class GLTypeWrapper<DataType> \
-  { \
-  public: \
+#define BIND_GL_TYPE(DataType, GLType)        \
+  template <>                                 \
+  class GLTypeWrapper<DataType>               \
+  {                                           \
+  public:                                     \
     static glConst Value() { return GLType; } \
   };
 
@@ -57,16 +58,15 @@ BIND_GL_TYPE(glsl::ivec4, gl_const::GLIntVec4)
 class Parameter
 {
 public:
-  template<typename ParamType>
-  static void CheckApply(UniformsGuard & guard, std::string const & name,
-                         ParamType const & t)
+  template <typename ParamType>
+  static void CheckApply(UniformsGuard & guard, std::string const & name, ParamType const & t)
   {
     if (Apply<ParamType>(guard.m_program, name, t))
       guard.m_counter++;
   }
 
 private:
-  template<typename ParamType>
+  template <typename ParamType>
   static bool Apply(ref_ptr<dp::GLGpuProgram> program, std::string const & name,
                     ParamType const & p)
   {
@@ -82,8 +82,7 @@ private:
 }  // namespace
 
 void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
-                                  ref_ptr<dp::GpuProgram> program,
-                                  MapProgramParams const & params)
+                                  ref_ptr<dp::GpuProgram> program, MapProgramParams const & params)
 {
   UNUSED_VALUE(context);
   UniformsGuard guard(program, params);
@@ -155,8 +154,7 @@ void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
 }
 
 void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
-                                  ref_ptr<dp::GpuProgram> program,
-                                  GuiProgramParams const & params)
+                                  ref_ptr<dp::GpuProgram> program, GuiProgramParams const & params)
 {
   UNUSED_VALUE(context);
   UniformsGuard guard(program, params);
@@ -220,12 +218,21 @@ void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
 }
 
 void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
-                                  ref_ptr<dp::GpuProgram> program,
-                                  SMAAProgramParams const & params)
+                                  ref_ptr<dp::GpuProgram> program, SMAAProgramParams const & params)
 {
   UNUSED_VALUE(context);
   UniformsGuard guard(program, params);
 
   Parameter::CheckApply(guard, "u_framebufferMetrics", params.m_framebufferMetrics);
 }
+
+void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
+                                  ref_ptr<dp::GpuProgram> program,
+                                  Car3dProgramParams const & params)
+{
+  UNUSED_VALUE(context);
+  UniformsGuard guard(program, params);
+
+  Parameter::CheckApply(guard, "u_transform", params.m_transform);
 }  // namespace gpu
+}

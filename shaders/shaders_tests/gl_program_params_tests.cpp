@@ -98,6 +98,15 @@ UNIT_TEST(Arrow3dProgramParams_Test)
                                       std::bind(&TestProgramParams<gpu::Arrow3dProgramParams>, _1));
 }
 
+UNIT_TEST(Car3dProgramParams_Test)
+{
+  RunTestInOpenGLOffscreenEnvironment("Car3dProgramParams_Test", false /* apiOpenGLES3 */,
+                                      std::bind(&TestProgramParams<gpu::Car3dProgramParams>, _1));
+
+  RunTestInOpenGLOffscreenEnvironment("Car3DProgramParams_Test", true /* apiOpenGLES3 */,
+                                      std::bind(&TestProgramParams<gpu::Car3dProgramParams>, _1));
+}
+
 UNIT_TEST(DebugRectProgramParams_Test)
 {
   RunTestInOpenGLOffscreenEnvironment("DebugRectProgramParams_Test", false /* apiOpenGLES3 */,

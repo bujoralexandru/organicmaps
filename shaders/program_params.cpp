@@ -18,6 +18,7 @@ void ProgramParams::Init()
   DebugRectProgramParams::BindPrograms(m_boundParams);
   ScreenQuadProgramParams::BindPrograms(m_boundParams);
   SMAAProgramParams::BindPrograms(m_boundParams);
+  Car3dProgramParams::BindPrograms(m_boundParams);
 }
 
 // static

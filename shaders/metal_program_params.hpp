@@ -31,6 +31,8 @@ public:
              ScreenQuadProgramParams const & params) override;
   void Apply(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program,
              SMAAProgramParams const & params) override;
+  void Apply(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program,
+             Car3dProgramParams const & params) override;
 };
 }  // namespace metal
 }  // namespace gpu

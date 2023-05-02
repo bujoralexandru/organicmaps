@@ -9,51 +9,53 @@
 
 #include <vector>
 
-namespace dp
-{
-class GpuProgram;
-class TextureManager;
+namespace dp {
+    class GpuProgram;
+
+    class TextureManager;
 }  // namespace dp
 
-namespace gpu
-{
-class ProgramManager;
+namespace gpu {
+    class ProgramManager;
 }  // namespace gpu
 
 class ScreenBase;
 
-namespace df
-{
-class Arrow3d
-{
-  using Base = dp::MeshObject;
-public:
-  explicit Arrow3d(ref_ptr<dp::GraphicsContext> context);
+namespace df {
+    class Arrow3d {
+        using Base = dp::MeshObject;
+    public:
+        explicit Arrow3d(ref_ptr <dp::GraphicsContext> context);
 
-  static double GetMaxBottomSize();
+        static double GetMaxBottomSize();
 
-  void SetPosition(m2::PointD const & position);
-  void SetAzimuth(double azimuth);
-  void SetTexture(ref_ptr<dp::TextureManager> texMng);
-  void SetPositionObsolete(bool obsolete);
+        void SetPosition(m2::PointD const &position);
 
-  void Render(ref_ptr<dp::GraphicsContext> context, ref_ptr<gpu::ProgramManager> mng,
-              ScreenBase const & screen, bool routingMode);
+        void SetAzimuth(double azimuth);
 
-private:
-  math::Matrix<float, 4, 4> CalculateTransform(ScreenBase const & screen, float dz,
-                                               float scaleFactor, dp::ApiVersion apiVersion) const;
-  void RenderArrow(ref_ptr<dp::GraphicsContext> context, ref_ptr<gpu::ProgramManager> mng,
-                   dp::MeshObject & mesh, ScreenBase const & screen, gpu::Program program,
-                   dp::Color const & color, float dz, float scaleFactor);
+        void SetTexture(ref_ptr <dp::TextureManager> texMng);
 
-  dp::MeshObject m_arrowMesh;
-  dp::MeshObject m_shadowMesh;
+        void SetPositionObsolete(bool obsolete);
 
-  m2::PointD m_position;
-  double m_azimuth = 0.0;
-  bool m_obsoletePosition = false;
+        void Render(ref_ptr <dp::GraphicsContext> context, ref_ptr <gpu::ProgramManager> mng,
+                    ScreenBase const &screen, bool routingMode);
 
-  dp::RenderState m_state;
-};
+    private:
+        math::Matrix<float, 4, 4> CalculateTransform(ScreenBase const &screen, float dz,
+                                                     float scaleFactor,
+                                                     dp::ApiVersion apiVersion) const;
+
+        void RenderArrow(ref_ptr <dp::GraphicsContext> context, ref_ptr <gpu::ProgramManager> mng,
+                         dp::MeshObject &mesh, ScreenBase const &screen, gpu::Program program,
+                         dp::Color const &color, float dz, float scaleFactor);
+
+        dp::MeshObject m_arrowMesh;
+        dp::MeshObject m_shadowMesh;
+
+        m2::PointD m_position;
+        double m_azimuth = 0.0;
+        bool m_obsoletePosition = false;
+
+        dp::RenderState m_state;
+    };
 }  // namespace df

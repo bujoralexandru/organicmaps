@@ -1,6 +1,7 @@
 #pragma once
 
 // Only defines and constexprs are allowed in this file.
+#define TINYOBJLOADER_IMPLEMENTATION
 
 #define DATA_FILE_EXTENSION ".mwm"
 #define DATA_FILE_EXTENSION_TMP ".mwm.tmp"
@@ -111,3 +112,5 @@
 #define LOCALIZATION_DESCRIPTION_SUFFIX " Description"
 
 #define BUILDING_PARTS_MAPPING_FILE "building_parts_mapping.bin"
+
+#define CAR_10000001_FOLDER "10000001"

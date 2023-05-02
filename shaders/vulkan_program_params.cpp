@@ -223,5 +223,12 @@ void VulkanProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
 {
   ApplyImpl(context, program, params);
 }
+
+void VulkanProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
+                                      ref_ptr<dp::GpuProgram> program,
+                                      Car3dProgramParams const & params)
+{
+  ApplyImpl(context, program, params);
+}
 }  // namespace vulkan
 }  // namespace gpu
