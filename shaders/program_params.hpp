@@ -195,6 +195,17 @@ struct Arrow3dProgramParams
     Program::Arrow3dOutline)
 } ALIGNMENT;
 
+struct Car3dProgramParams
+{
+    glsl::mat4 m_transform;
+    glsl::vec4 m_color;
+
+    BIND_PROGRAMS(Car3dProgramParams,
+      Program::Car3d,
+      Program::Car3dShadow,
+      Program::Car3dOutline)
+} ALIGNMENT;
+
 struct DebugRectProgramParams
 {
   glsl::vec4 m_color;
@@ -240,6 +251,8 @@ public:
                      ref_ptr<dp::GpuProgram> program, ShapesProgramParams const & params) = 0;
   virtual void Apply(ref_ptr<dp::GraphicsContext> context,
                      ref_ptr<dp::GpuProgram> program, Arrow3dProgramParams const & params) = 0;
+  virtual void Apply(ref_ptr<dp::GraphicsContext> context,
+                     ref_ptr<dp::GpuProgram> program, Car3dProgramParams const & params) = 0;
   virtual void Apply(ref_ptr<dp::GraphicsContext> context,
                      ref_ptr<dp::GpuProgram> program, DebugRectProgramParams const & params) = 0;
   virtual void Apply(ref_ptr<dp::GraphicsContext> context,

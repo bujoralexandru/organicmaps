@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import logging
 import re
@@ -10,6 +10,7 @@ from os.path import abspath, dirname, isfile
 
 EXPECTED_PERMISSIONS = {
     "uses-permission: android.permission.WRITE_EXTERNAL_STORAGE",
+    "uses-permission: android.permission.READ_EXTERNAL_STORAGE",
     "uses-permission: android.permission.ACCESS_COARSE_LOCATION",
     "uses-permission: android.permission.ACCESS_FINE_LOCATION",
     "uses-permission: android.permission.INTERNET",
@@ -134,7 +135,7 @@ class TestPermissions(unittest.TestCase):
         aapts = {}
         candidates = exec_shell("find", "{} -name aapt".format(platforms_path))
         for c in candidates:
-            if "build-tools/{}".format(build_tools_version) in c:
+            if "build-tools/{}".format(build_tools_version).encode() in c:
                 return c
 
             try:

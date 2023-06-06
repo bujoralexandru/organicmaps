@@ -379,6 +379,7 @@ def execute_external(options):
 # Generate SPIR-V shader from GLSL source.
 def generate_shader(shader, shader_dir, generation_dir, shaders_library, program_name, program_params,
                     layout_counters, output_name, reflection_dict, glslc_path):
+    glslc_path = "/home/daniel/Android/Sdk/ndk/25.2.9519653/shader-tools/linux-x86_64/glslc"
     output_path = os.path.join(generation_dir, output_name)
     with open(output_path, 'w') as file:
         generate_spirv_compatible_glsl_shader(file, shader, shader_dir, shaders_library,
@@ -395,6 +396,7 @@ def generate_shader(shader, shader_dir, generation_dir, shaders_library, program
             os.rename(output_path, debug_path)
         else:
             os.remove(output_path)
+        print(f"Suceeded for shader {shader}")
     except:
         print('Could not generate SPIR-V for the shader {0}. Most likely glslc from Android NDK is not found.'.format(shader))
         os.remove(output_path)
@@ -448,10 +450,12 @@ if __name__ == '__main__':
     programs_order = read_programs_file(os.path.join(shader_dir, '..', programs_file_name))
     program_params = read_program_params_file(os.path.join(shader_dir, '..', program_params_file_name))
     gpu_programs_cache = read_index_file(os.path.join(shader_dir, index_file_name), programs_order)
+    print(os.path.join(shader_dir, index_file_name), "\n\n\n\n")
     shaders_library = read_shaders_lib_file(os.path.join(shader_dir, shaders_lib_file))
     reflection = []
     current_offset = 0
     with open(os.path.join(generation_dir, 'shaders_pack.spv'), 'wb') as pack_file:
+        print(f"gpu_programs_cache.items():: {gpu_programs_cache.items():}")
         for (k, v) in gpu_programs_cache.items():
             if not k in program_params:
                 print('Program params were not found for the shader ' + k)

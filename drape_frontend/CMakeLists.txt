@@ -39,6 +39,8 @@ set(SRC
   area_shape.hpp
   arrow3d.cpp
   arrow3d.hpp
+  car3d.cpp
+  car3d.hpp
   backend_renderer.cpp
   backend_renderer.hpp
   base_renderer.cpp
@@ -208,6 +210,8 @@ set(SRC
 )
 
 omim_add_library(${PROJECT_NAME} ${SRC})
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${OMIM_ROOT}/3party/tinyobjloader)
 
 target_link_libraries(${PROJECT_NAME}
   editor

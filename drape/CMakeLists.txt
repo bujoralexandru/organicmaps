@@ -63,6 +63,8 @@ set(SRC
   index_storage.hpp
   mesh_object.cpp
   mesh_object.hpp
+  custom_mesh_object.cpp
+  custom_mesh_object.hpp
   object_pool.hpp
   oglcontext.cpp
   oglcontext.hpp
@@ -120,6 +122,7 @@ set(SRC
   vulkan/vulkan_memory_manager.cpp
   vulkan/vulkan_memory_manager.hpp
   vulkan/vulkan_mesh_object_impl.cpp
+  vulkan/vulkan_custom_mesh_object_impl.cpp
   vulkan/vulkan_object_manager.cpp
   vulkan/vulkan_object_manager.hpp
   vulkan/vulkan_param_descriptor.cpp

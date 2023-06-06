@@ -1,6 +1,7 @@
 #pragma once
 
 // Only defines and constexprs are allowed in this file.
+#define TINYOBJLOADER_IMPLEMENTATION
 
 #define DATA_FILE_EXTENSION ".mwm"
 #define DATA_FILE_EXTENSION_TMP ".mwm.tmp"

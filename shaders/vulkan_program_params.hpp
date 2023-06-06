@@ -48,6 +48,8 @@ public:
   void Apply(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program,
              Arrow3dProgramParams const & params) override;
   void Apply(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program,
+             Car3dProgramParams const & params) override;
+  void Apply(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program,
              DebugRectProgramParams const & params) override;
   void Apply(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program,
              ScreenQuadProgramParams const & params) override;

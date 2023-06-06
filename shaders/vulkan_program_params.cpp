@@ -205,6 +205,13 @@ void VulkanProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
 
 void VulkanProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
                                       ref_ptr<dp::GpuProgram> program,
+                                      Car3dProgramParams const & params)
+{
+  ApplyImpl(context, program, params);
+}
+
+void VulkanProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
+                                      ref_ptr<dp::GpuProgram> program,
                                       DebugRectProgramParams const & params)
 {
   ApplyImpl(context, program, params);

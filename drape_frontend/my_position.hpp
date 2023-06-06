@@ -1,6 +1,7 @@
 #pragma once
 
 #include "drape_frontend/arrow3d.hpp"
+#include "drape_frontend/car3d.hpp"
 #include "drape_frontend/frame_values.hpp"
 #include "drape_frontend/render_node.hpp"
 
@@ -68,6 +69,7 @@ private:
   std::vector<TPart> m_parts;
   std::vector<RenderNode> m_nodes;
 
-  drape_ptr<Arrow3d> m_arrow3d;
+//  drape_ptr<Arrow3d> m_arrow3d;
+  drape_ptr<Car3d> m_car3d;
 };
 }  // namespace df

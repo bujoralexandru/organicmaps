@@ -1,4 +1,4 @@
-#include "drape/mesh_object.hpp"
+#include "drape/custom_mesh_object.hpp"
 
 #include "drape/gl_constants.hpp"
 #include "drape/gl_gpu_program.hpp"
@@ -12,13 +12,13 @@
 
 namespace
 {
-glConst GetGLDrawPrimitive(dp::MeshObject::DrawPrimitive drawPrimitive)
+glConst GetGLDrawPrimitive(dp::CustomMeshObject::DrawPrimitive drawPrimitive)
 {
   switch (drawPrimitive)
   {
-  case dp::MeshObject::DrawPrimitive::Triangles: return gl_const::GLTriangles;
-  case dp::MeshObject::DrawPrimitive::TriangleStrip: return gl_const::GLTriangleStrip;
-  case dp::MeshObject::DrawPrimitive::LineStrip: return gl_const::GLLineStrip;
+  case dp::CustomMeshObject::DrawPrimitive::Triangles: return gl_const::GLTriangles;
+  case dp::CustomMeshObject::DrawPrimitive::TriangleStrip: return gl_const::GLTriangleStrip;
+  case dp::CustomMeshObject::DrawPrimitive::LineStrip: return gl_const::GLLineStrip;
   }
   UNREACHABLE();
 }
@@ -26,10 +26,10 @@ glConst GetGLDrawPrimitive(dp::MeshObject::DrawPrimitive drawPrimitive)
 
 namespace dp
 {
-class GLMeshObjectImpl : public MeshObjectImpl
+class CustomGLMeshObjectImpl : public CustomMeshObjectImpl
 {
 public:
-  explicit GLMeshObjectImpl(ref_ptr<dp::MeshObject> mesh)
+  explicit CustomGLMeshObjectImpl(ref_ptr<dp::CustomMeshObject> mesh)
     : m_mesh(mesh)
   {}
 
@@ -140,15 +140,18 @@ public:
   {
     UNUSED_VALUE(context);
 
+    __android_log_print(ANDROID_LOG_INFO, "TinyObj", "# verticesCount   = %d", verticesCount);
+
     GLFunctions::glDrawArrays(GetGLDrawPrimitive(m_mesh->m_drawPrimitive), 0, verticesCount);
+//    GLFunctions::glDrawArrays(GetGLDrawPrimitive(m_mesh->m_drawPrimitive), 0, 3 * verticesCount);
   }
 
 private:
-  ref_ptr<dp::MeshObject> m_mesh;
+  ref_ptr<dp::CustomMeshObject> m_mesh;
   uint32_t m_VAO = 0;
 };
 
-MeshObject::MeshObject(ref_ptr<dp::GraphicsContext> context, DrawPrimitive drawPrimitive)
+CustomMeshObject::CustomMeshObject(ref_ptr<dp::GraphicsContext> context, DrawPrimitive drawPrimitive)
   : m_drawPrimitive(drawPrimitive)
 {
   auto const apiVersion = context->GetApiVersion();
@@ -170,17 +173,17 @@ MeshObject::MeshObject(ref_ptr<dp::GraphicsContext> context, DrawPrimitive drawP
   CHECK(m_impl != nullptr, ());
 }
 
-MeshObject::~MeshObject()
+CustomMeshObject::~CustomMeshObject()
 {
   Reset();
 }
 
-void MeshObject::InitForOpenGL()
+void CustomMeshObject::InitForOpenGL()
 {
-  m_impl = make_unique_dp<GLMeshObjectImpl>(make_ref(this));
+  m_impl = make_unique_dp<CustomGLMeshObjectImpl>(make_ref(this));
 }
 
-void MeshObject::SetBuffer(uint32_t bufferInd, std::vector<float> && vertices, uint32_t stride)
+void CustomMeshObject::SetBuffer(uint32_t bufferInd, std::vector<float> && vertices, uint32_t stride)
 {
   CHECK_LESS_OR_EQUAL(bufferInd, GetNextBufferIndex(), ());
 
@@ -192,7 +195,7 @@ void MeshObject::SetBuffer(uint32_t bufferInd, std::vector<float> && vertices, u
   Reset();
 }
 
-void MeshObject::SetAttribute(std::string const & attributeName, uint32_t bufferInd, uint32_t offset,
+void CustomMeshObject::SetAttribute(std::string const & attributeName, uint32_t bufferInd, uint32_t offset,
                               uint32_t componentsCount)
 {
   CHECK_LESS(bufferInd, m_buffers.size(), ());
@@ -201,7 +204,7 @@ void MeshObject::SetAttribute(std::string const & attributeName, uint32_t buffer
   Reset();
 }
 
-void MeshObject::Reset()
+void CustomMeshObject::Reset()
 {
   CHECK(m_impl != nullptr, ());
   m_impl->Reset();
@@ -209,7 +212,7 @@ void MeshObject::Reset()
   m_initialized = false;
 }
 
-void MeshObject::UpdateBuffer(ref_ptr<dp::GraphicsContext> context, uint32_t bufferInd,
+void CustomMeshObject::UpdateBuffer(ref_ptr<dp::GraphicsContext> context, uint32_t bufferInd,
                               std::vector<float> && vertices)
 {
   CHECK(m_initialized, ());
@@ -223,7 +226,7 @@ void MeshObject::UpdateBuffer(ref_ptr<dp::GraphicsContext> context, uint32_t buf
   m_impl->UpdateBuffer(context, bufferInd);
 }
 
-void MeshObject::Build(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program)
+void CustomMeshObject::Build(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program)
 {
   Reset();
 
@@ -233,7 +236,7 @@ void MeshObject::Build(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProg
   m_initialized = true;
 }
 
-void MeshObject::Bind(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program)
+void CustomMeshObject::Bind(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program)
 {
   program->Bind();
 
@@ -244,19 +247,19 @@ void MeshObject::Bind(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgr
   m_impl->Bind(program);
 }
 
-void MeshObject::DrawPrimitives(ref_ptr<dp::GraphicsContext> context)
+void CustomMeshObject::DrawPrimitives(ref_ptr<dp::GraphicsContext> context)
 {
   if (m_buffers.empty())
     return;
 
   auto const & buffer = m_buffers[0];
-#ifdef DEBUG
-  for (size_t i = 1; i < m_buffers.size(); i++)
-  {
-    ASSERT_EQUAL(m_buffers[i].m_data.size() / m_buffers[i].m_stride,
-                 buffer.m_data.size() / buffer.m_stride, ());
-  }
-#endif
+//#ifdef DEBUG
+//  for (size_t i = 1; i < m_buffers.size(); i++)
+//  {
+//    ASSERT_EQUAL(m_buffers[i].m_data.size() / m_buffers[i].m_stride,
+//                 buffer.m_data.size() / buffer.m_stride, ());
+//  }
+//#endif
   auto const verticesCount =
       static_cast<uint32_t>(buffer.m_data.size() * sizeof(buffer.m_data[0]) / buffer.m_stride);
 
@@ -264,7 +267,7 @@ void MeshObject::DrawPrimitives(ref_ptr<dp::GraphicsContext> context)
   m_impl->DrawPrimitives(context, verticesCount);
 }
 
-void MeshObject::Unbind(ref_ptr<dp::GpuProgram> program)
+void CustomMeshObject::Unbind(ref_ptr<dp::GpuProgram> program)
 {
   program->Unbind();
 
@@ -273,7 +276,7 @@ void MeshObject::Unbind(ref_ptr<dp::GpuProgram> program)
 }
 
 // static
-std::vector<float> MeshObject::GenerateNormalsForTriangles(std::vector<float> const & vertices,
+std::vector<float> CustomMeshObject::GenerateNormalsForTriangles(std::vector<float> const & vertices,
                                                            size_t componentsCount)
 {
   auto const trianglesCount = vertices.size() / (3 * componentsCount);

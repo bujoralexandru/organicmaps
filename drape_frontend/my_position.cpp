@@ -67,8 +67,11 @@ MyPosition::MyPosition(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::Texture
 
 void MyPosition::InitArrow(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::TextureManager> mng)
 {
-  m_arrow3d = make_unique_dp<Arrow3d>(context);
-  m_arrow3d->SetTexture(mng);
+//  m_arrow3d = make_unique_dp<Arrow3d>(context);
+//  m_arrow3d->SetTexture(mng);
+
+  m_car3d = make_unique_dp<Car3d>(context);
+  m_car3d->SetTexture(mng);
 }
 
 void MyPosition::SetPosition(m2::PointF const & pt)
@@ -98,8 +101,11 @@ void MyPosition::SetRoutingMode(bool routingMode)
 
 void MyPosition::SetPositionObsolete(bool obsolete)
 {
-  CHECK(m_arrow3d != nullptr, ());
-  m_arrow3d->SetPositionObsolete(obsolete);
+//  CHECK(m_arrow3d != nullptr, ());
+//  m_arrow3d->SetPositionObsolete(obsolete);
+
+  CHECK(m_car3d != nullptr, ());
+  m_car3d->SetPositionObsolete(obsolete);
 }
 
 void MyPosition::RenderAccuracy(ref_ptr<dp::GraphicsContext> context, ref_ptr<gpu::ProgramManager> mng,
@@ -127,10 +133,15 @@ void MyPosition::RenderMyPosition(ref_ptr<dp::GraphicsContext> context, ref_ptr<
 {
   if (m_showAzimuth)
   {
-    CHECK(m_arrow3d != nullptr, ());
-    m_arrow3d->SetPosition(m2::PointD(m_position));
-    m_arrow3d->SetAzimuth(m_azimuth);
-    m_arrow3d->Render(context, mng, screen, m_isRoutingMode);
+//    CHECK(m_arrow3d != nullptr, ());
+//    m_arrow3d->SetPosition(m2::PointD(m_position));
+//    m_arrow3d->SetAzimuth(m_azimuth);
+//    m_arrow3d->Render(context, mng, screen, m_isRoutingMode);
+
+    CHECK(m_car3d != nullptr, ());
+    m_car3d->SetPosition(m2::PointD(m_position));
+    m_car3d->SetAzimuth(m_azimuth);
+    m_car3d->Render(context, mng, screen, m_isRoutingMode);
   }
   else
   {

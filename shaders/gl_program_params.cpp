@@ -201,6 +201,17 @@ void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
 
 void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
                                   ref_ptr<dp::GpuProgram> program,
+                                  Car3dProgramParams const & params)
+{
+  UNUSED_VALUE(context);
+  UniformsGuard guard(program, params);
+
+  Parameter::CheckApply(guard, "u_car_transform", params.m_transform);
+  Parameter::CheckApply(guard, "u_car_color", params.m_color);
+}
+
+void GLProgramParamsSetter::Apply(ref_ptr<dp::GraphicsContext> context,
+                                  ref_ptr<dp::GpuProgram> program,
                                   DebugRectProgramParams const & params)
 {
   UNUSED_VALUE(context);
