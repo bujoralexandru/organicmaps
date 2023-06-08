@@ -130,6 +130,10 @@ Car3d::Car3d(ref_ptr<dp::GraphicsContext> context)
   for (size_t s = 0; s < inshapes.size(); s++) {
     // Loop over faces(polygon)
     size_t index_offset = 0;
+    int material_id = inshapes[s].mesh.material_ids[0]; // get the material ID for this shape
+    tinyobj::material_t material = materials[material_id]; // get the material from the ID
+
+    __android_log_print(ANDROID_LOG_INFO, "TinyObj", "material = %s", material.name.c_str());
     for (size_t f = 0; f < inshapes[s].mesh.num_face_vertices.size(); f++) {
 
       //hardcode loading to triangles
