@@ -10,7 +10,9 @@ uniform sampler2D u_texture; // new uniform for the texture
 
 void main()
 {
-  vec4 resColor = vec4((v_intensity.x * 0.5 + 0.5) * u_color.rgb, u_color.a);
-  gl_FragColor = vec4(v_texcoord, 0.0, 1.0); // use texture coordinates as color
+  float alpha = smoothstep(0.8, 1.0, v_intensity.y);
+  vec4 textureColor = texture2D(u_texture, v_texcoord); // sample the texture
+  vec4 resColor = vec4((v_intensity.x * 0.5 + 0.5) * u_color.rgb, u_color.a * alpha);
+  gl_FragColor = textureColor * samsungGoogleNexusWorkaround(resColor); // use the sampled color
 }
 

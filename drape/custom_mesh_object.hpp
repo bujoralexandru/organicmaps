@@ -46,6 +46,7 @@ public:
   virtual ~CustomMeshObject();
 
   void SetBuffer(uint32_t bufferInd, std::vector<float> && vertices, uint32_t stride);
+  void SetTexture(uint32_t textureInd, std::string texture);
   void SetAttribute(std::string const & attributeName, uint32_t bufferInd, uint32_t offset, uint32_t componentsCount);
 
   void UpdateBuffer(ref_ptr<dp::GraphicsContext> context, uint32_t bufferInd, std::vector<float> && vertices);
@@ -66,6 +67,8 @@ public:
   };
 
   uint32_t GetNextBufferIndex() const { return static_cast<uint32_t>(m_buffers.size()); }
+
+  uint32_t GetNextTextureIndex() const { return static_cast<uint32_t>(m_textures.size()); }
 
   bool IsInitialized() const { return m_initialized; }
   void Build(ref_ptr<dp::GraphicsContext> context, ref_ptr<dp::GpuProgram> program);
@@ -118,6 +121,7 @@ private:
   void DrawPrimitives(ref_ptr<dp::GraphicsContext> context);
 
   std::vector<VertexBuffer> m_buffers;
+  std::vector<std::string> m_textures;
   DrawPrimitive m_drawPrimitive = DrawPrimitive::Triangles;
 
   drape_ptr<CustomMeshObjectImpl> m_impl;

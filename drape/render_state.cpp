@@ -263,6 +263,7 @@ void TextureState::ApplyTextures(ref_ptr<GraphicsContext> context, RenderState c
       dp::vulkan::ParamDescriptor descriptor;
       descriptor.m_type = dp::vulkan::ParamDescriptor::Type::Texture;
       descriptor.m_imageDescriptor.imageView = t->GetTextureView();
+      descriptor.image = t->GetImage();
       descriptor.m_imageDescriptor.sampler = vulkanContext->GetSampler(t->GetSamplerKey());
       descriptor.m_imageDescriptor.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 

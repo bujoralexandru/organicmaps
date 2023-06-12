@@ -195,6 +195,18 @@ void CustomMeshObject::SetBuffer(uint32_t bufferInd, std::vector<float> && verti
   Reset();
 }
 
+void CustomMeshObject::SetTexture(uint32_t textureInd, std::string texture)
+{
+    CHECK_LESS_OR_EQUAL(textureInd, GetNextTextureIndex(), ());
+
+    if (textureInd == GetNextTextureIndex())
+        m_textures.emplace_back(std::move(texture));
+    else
+        m_textures[textureInd] = std::move(texture);
+
+    Reset();
+}
+
 void CustomMeshObject::SetAttribute(std::string const & attributeName, uint32_t bufferInd, uint32_t offset,
                               uint32_t componentsCount)
 {

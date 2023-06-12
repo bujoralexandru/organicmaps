@@ -49,6 +49,7 @@ private:
 
   dp::CustomMeshObject m_carMesh;
 
+
   m2::PointD m_position;
   double m_azimuth = 0.0;
   bool m_obsoletePosition = false;

@@ -12,8 +12,9 @@
 
 #include "geometry/screenbase.hpp"
 #include "defines.hpp"
-#include "3party/tinyobjloader/tiny_obj_loader.h"
 #include <android/log.h>
+#include <vulkan/vulkan_core.h>
+#include "3party/tinyobjloader/tiny_obj_loader.h"
 
 namespace df
 {
@@ -110,28 +111,19 @@ Car3d::Car3d(ref_ptr<dp::GraphicsContext> context)
 
   std::vector<float> buffer;
 
-//  auto copiedVertices = vertices;
-//
-//  auto constexpr kVerticesBufferInd = 0;
-//  m_carMesh.SetBuffer(kVerticesBufferInd, std::move(copiedVertices),
-//                        sizeof(float) * kCarComponentsInVertex);
-//  m_carMesh.SetAttribute("a_pos", kVerticesBufferInd, 0 /* offset */, kCarComponentsInVertex);
-//
-//  auto constexpr kNormalsBufferInd = 1;
-//  m_carMesh.SetBuffer(kNormalsBufferInd, std::move(normals), sizeof(float) * kCarComponentsInNormal);
-//  m_carMesh.SetAttribute("a_normal", kNormalsBufferInd, 0 /* offset */, kCarComponentsInNormal);
-//
-//  auto constexpr kTexcoordsBufferInd = 2;
-//  m_carMesh.SetBuffer(kTexcoordsBufferInd, std::move(texcoords), sizeof(float) * kCarComponentsInText);
-//  m_carMesh.SetAttribute("a_texcoord", kTexcoordsBufferInd, 0 /* offset */, kCarComponentsInText);
-
   std::vector<Vertex> _vertices;
+  std::vector<std::string> _materials;
 
   for (size_t s = 0; s < inshapes.size(); s++) {
     // Loop over faces(polygon)
     size_t index_offset = 0;
     int material_id = inshapes[s].mesh.material_ids[0]; // get the material ID for this shape
     tinyobj::material_t material = materials[material_id]; // get the material from the ID
+
+    if(material.diffuse_texname != "") {
+      auto material_path = base_dir + material.diffuse_texname;
+      _materials.push_back(material_path);
+    }
 
     __android_log_print(ANDROID_LOG_INFO, "TinyObj", "material = %s", material.name.c_str());
     for (size_t f = 0; f < inshapes[s].mesh.num_face_vertices.size(); f++) {
@@ -140,7 +132,7 @@ Car3d::Car3d(ref_ptr<dp::GraphicsContext> context)
       int fv = 3;
 
       // Loop over vertices in the face.
-      for (size_t v = 0; v < fv; v++) {
+      for (int v = 0; v < fv; v++) {
         // access to vertex
         tinyobj::index_t idx = inshapes[s].mesh.indices[index_offset + v];
 
@@ -219,6 +211,11 @@ Car3d::Car3d(ref_ptr<dp::GraphicsContext> context)
     auto constexpr kTexcoordsBufferInd = 2;
     m_carMesh.SetBuffer(kTexcoordsBufferInd, std::move(copiedTexcoords), sizeof(float) * kCarComponentsInText);
     m_carMesh.SetAttribute("a_texcoord", kTexcoordsBufferInd, 0 /* offset */, kCarComponentsInText);
+
+    for (size_t i = 0; i < _materials.size(); i++)
+    {
+      m_carMesh.SetTexture(i, _materials[i]);
+    }
 }
 
 // static

@@ -30,6 +30,8 @@ struct ParamDescriptor
   int8_t m_textureSlot = 0;
 
   uint32_t m_id = 0;
+
+  VkImage image;
 };
 
 size_t constexpr kMaxDescriptorSets = 8;
